@@ -219,4 +219,5 @@ def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur
     return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)
+
