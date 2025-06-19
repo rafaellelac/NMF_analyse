@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
 # --- Configuration ---
 longueur = 40
