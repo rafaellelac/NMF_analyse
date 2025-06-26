@@ -67,11 +67,19 @@ app.layout = html.Div([
     Output('equipe-dropdown', 'value'),
     Input('match-dropdown', 'value')
 )
+
 def update_equipes(match_file):
     if match_file is None:
         return [], None
-    df = charger_match(match_file)
-    equipes = sorted(df['equipe'].dropna().unique())
+    # Extraire les équipes depuis le nom du fichier
+    base = os.path.basename(match_file).replace('.xlsx', '')
+    if '_vs_' in base:
+        equipes = base.split('_vs_')
+    elif ' vs ' in base:
+        equipes = base.split(' vs ')
+    else:
+        equipes = [base]
+    equipes = [eq.replace('_', ' ').strip() for eq in equipes]
     options = [{'label': eq, 'value': eq} for eq in equipes]
     return options, options[0]['value'] if options else None
 
