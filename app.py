@@ -149,6 +149,20 @@ def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur
     df = df[df['equipe'] == equipe]
     fig = go.Figure()
 
+    # Ajoute l'image du terrain en fond
+    fig.update_layout(
+        images=[dict(
+            source="Fond terrain NMF/BLEU BLANC OR VERTICAL.jpg",  # Mets ici l'URL ou le chemin local de ton image
+            xref="x", yref="y",
+            x=0, y=largeur, sizex=longueur, sizey=largeur,
+            sizing="stretch", opacity=0.5, layer="below"
+        )],
+        title=f"Analyse {critere.capitalize()}",
+        xaxis=dict(range=[0, longueur], showgrid=False, zeroline=False),
+        yaxis=dict(range=[0, largeur], scaleanchor='x', showgrid=False, zeroline=False)
+    )
+# ...existing code...
+
     # Sélection des joueurs
     if type_analyse == 'collectif':
         if joueurs_collectif:
@@ -175,11 +189,29 @@ def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur
         for _, row in df.iterrows():
             x0, y0 = row['FieldXfrom'] * longueur, row['FieldYfrom'] * largeur
             x1, y1 = row['FieldXto'] * longueur, row['FieldYto'] * largeur
-            fig.add_trace(go.Scatter(x=[x0, x1], y=[y0, y1], mode='lines+markers',
-                                     line=dict(width=2, color='blue'),
-                                     marker=dict(size=6),
-                                     text=f"{row['joueur']} - {row['statut_passe']}",
-                                     hoverinfo='text'))
+            distance = np.sqrt((x1 - x0)**2 + (y1 - y0)**2)
+            fig.add_trace(go.Scatter(
+                x=[x0, x1], y=[y0, y1],
+                mode='lines+markers',
+                line=dict(width=2, color='blue'),
+                marker=dict(size=6),
+                customdata=[[row['joueur'], row['statut_passe'], distance]],
+                hovertemplate=(
+                    "Joueur: %{customdata[0]}<br>"
+                    "Statut: %{customdata[1]}<br>"
+                    "Distance: %{customdata[2]:.2f} m<br>"
+                    "<extra></extra>"
+                ),
+                showlegend=False
+            ))
+            # Ajout d'une flèche (annotation) pour la pointe
+            fig.add_annotation(
+                x=x1, y=y1, ax=x0, ay=y0,
+                xref='x', yref='y', axref='x', ayref='y',
+                showarrow=True, arrowhead=3, arrowsize=1, arrowwidth=2, arrowcolor='blue',
+                opacity=0.7
+            )
+
 
     elif critere == 'tir':
         if filtres:
