@@ -135,13 +135,18 @@ def update_filtres(critere, type_analyse):
     Input('match-dropdown', 'value'),
     Input('equipe-dropdown', 'value'),
     Input('type-analyse-radio', 'value'),
-    Input('joueurs-dropdown', 'value'),
-    Input('joueur-dropdown', 'value'),
-    Input('gardien-checklist', 'value'),
+    State('joueurs-dropdown', 'value'),
+    State('joueur-dropdown', 'value'),
+    State('gardien-checklist', 'value'),
     Input('critere-dropdown', 'value'),
     Input('filtre-dropdown', 'value')
 )
+
 def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur_indiv, gardien, critere, filtres):
+    joueurs_collectif = joueurs_collectif or []
+    joueur_indiv = joueur_indiv or None
+    gardien = gardien or []
+    
     if match_file is None or equipe is None:
         return go.Figure()
 
