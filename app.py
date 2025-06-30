@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 import os
+from dash.exceptions import PreventUpdate
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
@@ -139,7 +140,8 @@ def update_filtres(critere, type_analyse):
     State('joueur-dropdown', 'value'),
     State('gardien-checklist', 'value'),
     Input('critere-dropdown', 'value'),
-    Input('filtre-dropdown', 'value')
+    Input('filtre-dropdown', 'value'),
+    prevent_initial_call=True
 )
 
 def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur_indiv, gardien, critere, filtres):
@@ -148,7 +150,7 @@ def afficher_analyse(match_file, equipe, type_analyse, joueurs_collectif, joueur
     gardien = gardien or []
     
     if match_file is None or equipe is None:
-        return go.Figure()
+        raise PreventUpdate
 
     df = charger_match(match_file)
     df = df[df['equipe'] == equipe]
